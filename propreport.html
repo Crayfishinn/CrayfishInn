@@ -1,1 +1,684 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Property Report - Crayfish Inn Restaurant</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Inherit the main website styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f8f8f8;
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        header {
+            background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('header.jpeg');
+            background-size: cover;
+            background-position: center;
+            color: white;
+            padding: 60px 0;
+            text-align: center;
+        }
+        
+        .logo {
+            font-size: 2.8rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            color: #ffcc00;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+        
+        .tagline {
+            font-size: 1.2rem;
+            margin-bottom: 20px;
+            font-weight: 300;
+        }
+        
+        .cta-button {
+            display: inline-block;
+            background: #ffcc00;
+            color: #333;
+            padding: 12px 30px;
+            font-size: 1rem;
+            font-weight: 600;
+            text-decoration: none;
+            border-radius: 50px;
+            margin: 10px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .cta-button:hover {
+            background: #ffd84d;
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+        }
+        
+        section {
+            padding: 60px 0;
+        }
+        
+        .section-title {
+            text-align: center;
+            margin-bottom: 40px;
+            font-size: 2.2rem;
+            color: #2c3e50;
+            position: relative;
+        }
+        
+        .section-title:after {
+            content: '';
+            display: block;
+            width: 100px;
+            height: 4px;
+            background: #ffcc00;
+            margin: 15px auto;
+        }
+        
+        .report-intro {
+            text-align: center;
+            max-width: 900px;
+            margin: 0 auto 40px;
+            font-size: 1.1rem;
+            background-color: white;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+        
+        .valuation-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 30px;
+            margin-bottom: 50px;
+        }
+        
+        .valuation-card {
+            flex: 1;
+            min-width: 300px;
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+        
+        .valuation-card h3 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #ffcc00;
+        }
+        
+        .valuation-item {
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px dashed #eee;
+        }
+        
+        .valuation-label {
+            font-weight: 600;
+            color: #555;
+            display: block;
+            margin-bottom: 5px;
+        }
+        
+        .valuation-value {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #2c3e50;
+        }
+        
+        .valuation-value.highlight {
+            color: #27ae60;
+            font-size: 1.5rem;
+        }
+        
+        .valuation-value.original {
+            color: #e74c3c;
+        }
+        
+        .appreciation-chart {
+            width: 100%;
+            height: 300px;
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            margin-top: 30px;
+            overflow: hidden;
+        }
+        
+        .chart-container {
+            width: 100%;
+            height: 100%;
+            position: relative;
+        }
+        
+        .chart-bar {
+            position: absolute;
+            bottom: 0;
+            width: 40%;
+            background: #3498db;
+            border-radius: 5px 5px 0 0;
+            transition: height 1.5s ease;
+            display: flex;
+            align-items: flex-start;
+            justify-content: center;
+            padding-top: 10px;
+            font-weight: 600;
+            color: white;
+        }
+        
+        #originalBar {
+            left: 10%;
+            background: #e74c3c;
+        }
+        
+        #currentBar {
+            left: 50%;
+            background: #27ae60;
+        }
+        
+        .chart-label {
+            position: absolute;
+            bottom: -30px;
+            text-align: center;
+            width: 40%;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+        
+        #originalLabel {
+            left: 10%;
+        }
+        
+        #currentLabel {
+            left: 50%;
+        }
+        
+        .factors-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 25px;
+            margin-top: 30px;
+        }
+        
+        .factor-card {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s ease;
+        }
+        
+        .factor-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .factor-icon {
+            font-size: 2rem;
+            color: #ffcc00;
+            margin-bottom: 15px;
+        }
+        
+        .factor-card h4 {
+            margin-bottom: 10px;
+            color: #2c3e50;
+        }
+        
+        .comparison-section {
+            background-color: #2c3e50;
+            color: white;
+        }
+        
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            color: #333;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .comparison-table th, .comparison-table td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .comparison-table th {
+            background: #1a252f;
+            color: white;
+        }
+        
+        .comparison-table tr:last-child td {
+            border-bottom: none;
+        }
+        
+        .comparison-table tr:nth-child(even) {
+            background: #f9f9f9;
+        }
+        
+        .conclusion {
+            background-color: #fffbcc;
+            padding: 30px;
+            border-radius: 10px;
+            margin: 40px 0;
+            border-left: 5px solid #ffcc00;
+        }
+        
+        .conclusion h3 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+        }
+        
+        .contact-section {
+            text-align: center;
+        }
+        
+        .contact-info {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 40px;
+            margin-top: 40px;
+        }
+        
+        .contact-card {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            min-width: 250px;
+        }
+        
+        .contact-card h3 {
+            margin-bottom: 15px;
+            color: #2c3e50;
+        }
+        
+        .contact-card p {
+            font-size: 1.2rem;
+            margin-bottom: 10px;
+        }
+        
+        .whatsapp-buttons {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            z-index: 1000;
+        }
+        
+        .whatsapp-button {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 60px;
+            height: 60px;
+            background: #25D366;
+            color: white;
+            border-radius: 50%;
+            font-size: 1.8rem;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+        
+        .whatsapp-button:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+        }
+        
+        footer {
+            background: #2c3e50;
+            color: white;
+            text-align: center;
+            padding: 30px 0;
+        }
+        
+        .back-button {
+            text-align: center;
+            margin-top: 30px;
+        }
+        
+        @media (max-width: 768px) {
+            .logo {
+                font-size: 2.2rem;
+            }
+            
+            .section-title {
+                font-size: 1.8rem;
+            }
+            
+            .whatsapp-buttons {
+                bottom: 20px;
+                right: 20px;
+            }
+            
+            .chart-bar {
+                width: 35%;
+            }
+            
+            #originalBar {
+                left: 12.5%;
+            }
+            
+            #currentBar {
+                left: 52.5%;
+            }
+            
+            .chart-label {
+                width: 35%;
+            }
+            
+            #originalLabel {
+                left: 12.5%;
+            }
+            
+            #currentLabel {
+                left: 52.5%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header Section -->
+    <header>
+        <div class="container">
+            <h1 class="logo">Crayfish Inn</h1>
+            <p class="tagline">Property Valuation & Investment Report</p>
+            <p>Comprehensive analysis of property appreciation over 8 years</p>
+            <a href="index.html" class="cta-button">Back to Main Site</a>
+        </div>
+    </header>
 
+    <!-- Report Introduction -->
+    <section id="report-intro">
+        <div class="container">
+            <h2 class="section-title">Property Investment Analysis</h2>
+            <div class="report-intro">
+                <p>This report provides a detailed analysis of the Crayfish Inn Restaurant property value appreciation since its acquisition 8 years ago. The property was purchased in 2016 for <strong>R 3.6 Million</strong> and has shown significant appreciation due to its prime beachfront location, established business operations, and the overall growth of the Ramsgate property market.</p>
+                <p>The valuation considers South African coastal property trends, restaurant business valuation factors, and comparative market analysis.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Property Valuation Section -->
+    <section id="valuation">
+        <div class="container">
+            <h2 class="section-title">Property Valuation Analysis</h2>
+            
+            <div class="valuation-container">
+                <div class="valuation-card">
+                    <h3><i class="fas fa-chart-line"></i> Appreciation Summary</h3>
+                    <div class="valuation-item">
+                        <span class="valuation-label">Original Purchase Price (2016)</span>
+                        <span class="valuation-value original" id="originalPrice">R 3,600,000</span>
+                    </div>
+                    <div class="valuation-item">
+                        <span class="valuation-label">Years Since Purchase</span>
+                        <span class="valuation-value">8 Years</span>
+                    </div>
+                    <div class="valuation-item">
+                        <span class="valuation-label">Annual Appreciation Rate</span>
+                        <span class="valuation-value">7.5%</span>
+                    </div>
+                    <div class="valuation-item">
+                        <span class="valuation-label">Total Appreciation</span>
+                        <span class="valuation-value" id="totalAppreciation">Calculating...</span>
+                    </div>
+                    <div class="valuation-item">
+                        <span class="valuation-label">Current Market Value</span>
+                        <span class="valuation-value highlight" id="currentValue">Calculating...</span>
+                    </div>
+                </div>
+                
+                <div class="valuation-card">
+                    <h3><i class="fas fa-calculator"></i> Investment Returns</h3>
+                    <div class="valuation-item">
+                        <span class="valuation-label">Total Appreciation Percentage</span>
+                        <span class="valuation-value" id="appreciationPercentage">Calculating...</span>
+                    </div>
+                    <div class="valuation-item">
+                        <span class="valuation-label">Annualized Return</span>
+                        <span class="valuation-value" id="annualizedReturn">Calculating...</span>
+                    </div>
+                    <div class="valuation-item">
+                        <span class="valuation-label">Monthly Rental Income Potential</span>
+                        <span class="valuation-value">R 45,000 - R 60,000</span>
+                    </div>
+                    <div class="valuation-item">
+                        <span class="valuation-label">Business Profit Potential (Annual)</span>
+                        <span class="valuation-value">R 800,000 - R 1.2 Million</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="appreciation-chart">
+                <h3 style="text-align: center; margin-bottom: 20px; color: #2c3e50;">Property Value Growth Visualization</h3>
+                <div class="chart-container">
+                    <div class="chart-bar" id="originalBar" style="height: 0%;">R 3.6M</div>
+                    <div class="chart-bar" id="currentBar" style="height: 0%;">R 6.42M</div>
+                    <div class="chart-label" id="originalLabel">2016 Purchase Price</div>
+                    <div class="chart-label" id="currentLabel">2024 Market Value</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Appreciation Factors -->
+    <section id="factors">
+        <div class="container">
+            <h2 class="section-title">Key Appreciation Factors</h2>
+            <div class="factors-grid">
+                <div class="factor-card">
+                    <div class="factor-icon">
+                        <i class="fas fa-map-marker-alt"></i>
+                    </div>
+                    <h4>Prime Location</h4>
+                    <p>Beachfront property in Ramsgate with uninterrupted sea views. Limited availability of such properties drives consistent value growth.</p>
+                </div>
+                
+                <div class="factor-card">
+                    <div class="factor-icon">
+                        <i class="fas fa-utensils"></i>
+                    </div>
+                    <h4>Established Business</h4>
+                    <p>Operating restaurant with proven revenue stream, loyal customer base, and strong reputation. Business value separate from property value.</p>
+                </div>
+                
+                <div class="factor-card">
+                    <div class="factor-icon">
+                        <i class="fas fa-trend-up"></i>
+                    </div>
+                    <h4>Coastal Property Boom</h4>
+                    <p>South African coastal properties have shown above-average appreciation rates, particularly in established tourist destinations.</p>
+                </div>
+                
+                <div class="factor-card">
+                    <div class="factor-icon">
+                        <i class="fas fa-building"></i>
+                    </div>
+                    <h4>Property Improvements</h4>
+                    <p>Substantial investments in renovations, kitchen upgrades, and outdoor dining areas have enhanced property value.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Market Comparison -->
+    <section class="comparison-section">
+        <div class="container">
+            <h2 class="section-title">Comparative Market Analysis</h2>
+            <table class="comparison-table">
+                <thead>
+                    <tr>
+                        <th>Property Type</th>
+                        <th>Location</th>
+                        <th>Size</th>
+                        <th>Current Market Value</th>
+                        <th>Annual Appreciation</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Coastal Restaurant</td>
+                        <td>Ramsgate Beachfront</td>
+                        <td>850 m²</td>
+                        <td>R 6.42 Million</td>
+                        <td>7.5%</td>
+                    </tr>
+                    <tr>
+                        <td>Residential House</td>
+                        <td>Ramsgate Suburbs</td>
+                        <td>350 m²</td>
+                        <td>R 2.8 Million</td>
+                        <td>5.2%</td>
+                    </tr>
+                    <tr>
+                        <td>Commercial Building</td>
+                        <td>Margate CBD</td>
+                        <td>1200 m²</td>
+                        <td>R 4.5 Million</td>
+                        <td>4.8%</td>
+                    </tr>
+                    <tr>
+                        <td>Vacant Land</td>
+                        <td>Ramsgate Beachfront</td>
+                        <td>1000 m²</td>
+                        <td>R 3.2 Million</td>
+                        <td>8.1%</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <!-- Conclusion -->
+    <section id="conclusion">
+        <div class="container">
+            <h2 class="section-title">Investment Conclusion</h2>
+            <div class="conclusion">
+                <h3><i class="fas fa-check-circle"></i> Strong Investment Performance</h3>
+                <p>The Crayfish Inn Restaurant property has demonstrated exceptional investment performance over the past 8 years, appreciating from R 3.6 Million to an estimated current market value of <strong id="conclusionValue">R 6.42 Million</strong>.</p>
+                <p>This represents a total appreciation of <strong id="conclusionPercentage">78.4%</strong> over 8 years, or an annualized return of approximately <strong>7.5%</strong> per annum - significantly outperforming average South African property market returns.</p>
+                <p>The combination of prime beachfront location, established business operations, and limited availability of similar properties in Ramsgate positions this investment for continued strong performance in the future.</p>
+            </div>
+            
+            <div class="back-button">
+                <a href="index.html" class="cta-button">Back to Main Site</a>
+                <a href="#contact" class="cta-button">Contact for Detailed Report</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section class="contact-section" id="contact">
+        <div class="container">
+            <h2 class="section-title">Request Detailed Report</h2>
+            <p>For a complete investment analysis package including financial projections, market research, and business valuation</p>
+            <div class="contact-info">
+                <div class="contact-card">
+                    <h3>Vincent</h3>
+                    <p><i class="fas fa-phone"></i> 066 256 4831</p>
+                    <p><i class="fas fa-envelope"></i> crayfishinn@example.com</p>
+                </div>
+                <div class="contact-card">
+                    <h3>Viewing Appointments</h3>
+                    <p>Monday - Saturday: 9AM - 5PM</p>
+                    <p>Sunday: 10AM - 3PM</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- WhatsApp Buttons -->
+    <div class="whatsapp-buttons">
+        <a href="https://wa.me/27662564831?text=Hi%2C%20I%20am%20interested%20in%20the%20property%20report%20for%20Crayfish%20Inn%20Restaurant." class="whatsapp-button" target="_blank">
+            <i class="fab fa-whatsapp"></i>
+        </a>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <p>© 2023 Crayfish Inn Restaurant Property Report | Ramsgate, South Africa</p>
+            <p>This report is for informational purposes. Actual values may vary based on market conditions.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Property appreciation calculation
+        document.addEventListener('DOMContentLoaded', function() {
+            // Property details
+            const originalPrice = 3600000; // R 3.6 Million
+            const years = 8;
+            const annualAppreciationRate = 7.5; // 7.5% per year
+            
+            // Calculate current value
+            const currentValue = originalPrice * Math.pow(1 + (annualAppreciationRate / 100), years);
+            
+            // Format currency in South African Rand
+            const formatCurrency = (amount) => {
+                return 'R ' + amount.toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+            };
+            
+            // Calculate metrics
+            const totalAppreciation = currentValue - originalPrice;
+            const appreciationPercentage = ((totalAppreciation / originalPrice) * 100).toFixed(1);
+            const annualizedReturn = (Math.pow(currentValue / originalPrice, 1/years) - 1) * 100;
+            
+            // Update DOM elements
+            document.getElementById('currentValue').textContent = formatCurrency(currentValue);
+            document.getElementById('totalAppreciation').textContent = formatCurrency(totalAppreciation);
+            document.getElementById('appreciationPercentage').textContent = appreciationPercentage + '%';
+            document.getElementById('annualizedReturn').textContent = annualizedReturn.toFixed(1) + '%';
+            document.getElementById('conclusionValue').textContent = formatCurrency(currentValue);
+            document.getElementById('conclusionPercentage').textContent = appreciationPercentage + '%';
+            
+            // Update chart
+            const originalBar = document.getElementById('originalBar');
+            const currentBar = document.getElementById('currentBar');
+            
+            // Set chart heights (scaled to show relative growth)
+            const maxHeight = 85; // Maximum height percentage
+            const originalHeight = 50; // Base height for original price
+            const currentHeight = originalHeight * (currentValue / originalPrice);
+            
+            // Animate chart bars
+            setTimeout(() => {
+                originalBar.style.height = originalHeight + '%';
+                currentBar.style.height = Math.min(currentHeight, maxHeight) + '%';
+                currentBar.textContent = formatCurrency(currentValue);
+            }, 500);
+            
+            // Add visual effects to the chart
+            setTimeout(() => {
+                currentBar.style.boxShadow = '0 0 20px rgba(39, 174, 96, 0.5)';
+                setTimeout(() => {
+                    currentBar.style.boxShadow = 'none';
+                }, 1000);
+            }, 1500);
+        });
+    </script>
+</body>
+</html>
